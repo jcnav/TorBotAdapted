@@ -45,3 +45,6 @@ unipath==1.1 ; python_version >= "3.9" and python_full_version <= "3.11.4"
 urllib3==1.26.18 ; python_version >= "3.9" and python_full_version <= "3.11.4"
 validators==0.20.0 ; python_version >= "3.9" and python_full_version <= "3.11.4"
 yattag==1.15.1 ; python_version >= "3.9" and python_full_version <= "3.11.4"
+# https://gitlab.com/junquera/restalker Could you use for reference in Tor extracting pattern
+# There are somo difficulties importing this library
+git+https://gitlab.com/junquera/stalker.git#egg=stalker
