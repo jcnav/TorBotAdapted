@@ -82,10 +82,14 @@ class LinkTree(Tree):
             for p in s.parse(resp.text):
                 logging(f"Found pattern {p}")
                 print(p)
+
+            # Example to add btc_wallets
+            btc_wallets = s.btc_wallet
+            data = LinkNode(title, id, resp.status_code, classification, accuracy, numbers, emails, btc_wallets)
+
             # End parser code
-            data = LinkNode(
-                title, id, resp.status_code, classification, accuracy, numbers, emails
-            )
+            # data = LinkNode(title, id, resp.status_code, classification, accuracy, numbers, emails)
+
             self.create_node(title, identifier=id, parent=parent_id, data=data)
         except exceptions.DuplicatedNodeIdError:
             logging.debug(f"found a duplicate URL {id}")
