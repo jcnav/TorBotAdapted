@@ -8,6 +8,7 @@ import httpx
 import validators
 import logging
 import phonenumbers
+import restalker
 
 from urllib import parse
 from tabulate import tabulate
@@ -57,17 +58,38 @@ class LinkTree(Tree):
         If the parent_id is None, this will be considered a root node.
         """
         resp = self._client.get(id)
+
         soup = BeautifulSoup(resp.text, "html.parser")
         title = (
             soup.title.text.strip() if soup.title is not None else parse_hostname(id)
         )
         try:
+            # Parser with BS (internal code)
             [classification, accuracy] = classify(resp.text)
             numbers = parse_phone_numbers(soup)
             emails = parse_emails(soup)
-            data = LinkNode(
-                title, id, resp.status_code, classification, accuracy, numbers, emails
-            )
+            # Parser with stalker (external library). Params available:
+            #  phone,email,
+            #  btc_wallet, eth_wallet, xmr_wallet, zec_wallet, dash_wallet, dot_wallet, xrp_wallet, bnb_wallet,
+            #  tor, i2p, ipfs, freenet, zeronet, zeronet_ctxt,
+            #  bitname, paste, twitter,
+            #  username, password,
+            #  location, organization, keyphrase, keywords=[], base64, own_name,
+            #  whatsapp, discord, telegram, skype,
+            #  md5, sha1, sha256,
+            #  all,
+            s = restalker.reStalker(all=True)
+            for p in s.parse(resp.text):
+                logging(f"Found pattern {p}")
+                print(p)
+
+            # Example to add btc_wallets
+            btc_wallets = s.btc_wallet
+            data = LinkNode(title, id, resp.status_code, classification, accuracy, numbers, emails, btc_wallets)
+
+            # End parser code
+            # data = LinkNode(title, id, resp.status_code, classification, accuracy, numbers, emails)
+
             self.create_node(title, identifier=id, parent=parent_id, data=data)
         except exceptions.DuplicatedNodeIdError:
             logging.debug(f"found a duplicate URL {id}")
